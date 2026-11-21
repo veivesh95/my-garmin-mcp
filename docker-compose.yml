@@ -1,0 +1,12 @@
+services:
+  garmin-mcp:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Inside the container listen on all interfaces...
+      LISTEN_ADDR: ":8080"
+    ports:
+      # ...but publish only on the VM's loopback. Expose it through
+      # Cloudflare Tunnel or Caddy, never directly.
+      - "127.0.0.1:8080:8080"

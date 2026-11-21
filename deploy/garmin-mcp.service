@@ -1,0 +1,24 @@
+# Alternative to Docker: run the binary under systemd.
+# 1. go build -o garmin-mcp ./cmd/garmin-mcp   (on the VM, or GOOS=linux GOARCH=arm64)
+# 2. sudo install -D garmin-mcp /opt/garmin-mcp/garmin-mcp
+# 3. sudo install -m 600 .env /etc/garmin-mcp.env
+# 4. sudo cp deploy/garmin-mcp.service /etc/systemd/system/
+# 5. sudo systemctl daemon-reload && sudo systemctl enable --now garmin-mcp
+[Unit]
+Description=Garmin MCP server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/opt/garmin-mcp/garmin-mcp
+EnvironmentFile=/etc/garmin-mcp.env
+DynamicUser=yes
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target
